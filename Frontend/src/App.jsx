@@ -28,6 +28,7 @@ function App() {
     });
     setTitle("");
     setContent("");
+    document.getElementById("editor").innerHTML = "";
     setAuthor("");
     fetchPosts();
   };
@@ -37,12 +38,17 @@ function App() {
     fetchPosts();
   };
 
+  const formatText = (command) => {
+    document.execCommand(command, false, null);
+  };
+
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
-      <h1 style={{ color: "#333" }}>📝 My CMS Blog</h1>
+      <h1>📝 My CMS Blog</h1>
 
       <div style={{ background: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "30px" }}>
         <h2>Create New Post</h2>
+
         <input
           type="text"
           placeholder="Title"
@@ -50,13 +56,31 @@ function App() {
           onChange={(e) => setTitle(e.target.value)}
           style={{ width: "100%", padding: "10px", marginBottom: "10px", fontSize: "16px" }}
         />
-        <textarea
-          placeholder="Content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          rows={5}
-          style={{ width: "100%", padding: "10px", marginBottom: "10px", fontSize: "16px" }}
+
+        {/* Toolbar */}
+        <div style={{ background: "#ddd", padding: "5px", marginBottom: "0", borderRadius: "4px 4px 0 0" }}>
+          <button onClick={() => formatText("bold")} style={{ marginRight: "5px", padding: "5px 10px", fontWeight: "bold" }}>B</button>
+          <button onClick={() => formatText("italic")} style={{ marginRight: "5px", padding: "5px 10px", fontStyle: "italic" }}>I</button>
+          <button onClick={() => formatText("underline")} style={{ marginRight: "5px", padding: "5px 10px", textDecoration: "underline" }}>U</button>
+          <button onClick={() => formatText("insertUnorderedList")} style={{ marginRight: "5px", padding: "5px 10px" }}>• List</button>
+        </div>
+
+        {/* Editor */}
+        <div
+          id="editor"
+          contentEditable
+          onInput={(e) => setContent(e.currentTarget.innerHTML)}
+          style={{
+            border: "1px solid #ccc",
+            minHeight: "150px",
+            padding: "10px",
+            marginBottom: "10px",
+            background: "white",
+            borderRadius: "0 0 4px 4px"
+          }}
+          suppressContentEditableWarning={true}
         />
+
         <input
           type="text"
           placeholder="Author name"
@@ -64,6 +88,7 @@ function App() {
           onChange={(e) => setAuthor(e.target.value)}
           style={{ width: "100%", padding: "10px", marginBottom: "10px", fontSize: "16px" }}
         />
+
         <button
           onClick={handleSubmit}
           style={{ background: "#4CAF50", color: "white", padding: "12px 30px", fontSize: "16px", border: "none", borderRadius: "5px", cursor: "pointer" }}
@@ -79,7 +104,7 @@ function App() {
         posts.map((post) => (
           <div key={post._id} style={{ background: "white", border: "1px solid #ddd", padding: "20px", marginBottom: "15px", borderRadius: "8px" }}>
             <h3>{post.title}</h3>
-            <p>{post.content}</p>
+            <div dangerouslySetInnerHTML={{ __html: post.content }} />
             <small>By: {post.author} | {new Date(post.createdAt).toLocaleDateString()}</small>
             <br/>
             <button
