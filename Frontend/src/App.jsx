@@ -48,7 +48,6 @@ function App() {
 
       <div style={{ background: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "30px" }}>
         <h2>Create New Post</h2>
-
         <input
           type="text"
           placeholder="Title"
@@ -56,31 +55,19 @@ function App() {
           onChange={(e) => setTitle(e.target.value)}
           style={{ width: "100%", padding: "10px", marginBottom: "10px", fontSize: "16px" }}
         />
-
-        {/* Toolbar */}
-        <div style={{ background: "#ddd", padding: "5px", marginBottom: "0", borderRadius: "4px 4px 0 0" }}>
+        <div style={{ background: "#ddd", padding: "5px", borderRadius: "4px 4px 0 0" }}>
           <button onClick={() => formatText("bold")} style={{ marginRight: "5px", padding: "5px 10px", fontWeight: "bold" }}>B</button>
           <button onClick={() => formatText("italic")} style={{ marginRight: "5px", padding: "5px 10px", fontStyle: "italic" }}>I</button>
           <button onClick={() => formatText("underline")} style={{ marginRight: "5px", padding: "5px 10px", textDecoration: "underline" }}>U</button>
           <button onClick={() => formatText("insertUnorderedList")} style={{ marginRight: "5px", padding: "5px 10px" }}>• List</button>
         </div>
-
-        {/* Editor */}
         <div
           id="editor"
           contentEditable
           onInput={(e) => setContent(e.currentTarget.innerHTML)}
-          style={{
-            border: "1px solid #ccc",
-            minHeight: "150px",
-            padding: "10px",
-            marginBottom: "10px",
-            background: "white",
-            borderRadius: "0 0 4px 4px"
-          }}
+          style={{ border: "1px solid #ccc", minHeight: "150px", padding: "10px", marginBottom: "10px", background: "white", borderRadius: "0 0 4px 4px" }}
           suppressContentEditableWarning={true}
         />
-
         <input
           type="text"
           placeholder="Author name"
@@ -88,7 +75,6 @@ function App() {
           onChange={(e) => setAuthor(e.target.value)}
           style={{ width: "100%", padding: "10px", marginBottom: "10px", fontSize: "16px" }}
         />
-
         <button
           onClick={handleSubmit}
           style={{ background: "#4CAF50", color: "white", padding: "12px 30px", fontSize: "16px", border: "none", borderRadius: "5px", cursor: "pointer" }}
