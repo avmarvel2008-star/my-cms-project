@@ -28,7 +28,7 @@ function App() {
   }, [search, activeCategory]);
 
   const fetchPosts = async () => {
-    const res = await axios.get("http://localhost:5000/api/posts", {
+    const res = await axios.get("https://blogify-backend-qi2k.onrender.com/api/posts", {
       params: {
         search: search,
         category: activeCategory
@@ -43,13 +43,13 @@ function App() {
       return;
     }
     if (editingId) {
-      await axios.put(`http://localhost:5000/api/posts/${editingId}`, {
+      await axios.put(`https://blogify-backend-qi2k.onrender.com/api/posts/${editingId}`, {
         title, content, author, category
       });
       setEditingId(null);
       alert("Post updated! ✅");
     } else {
-      await axios.post("http://localhost:5000/api/posts", {
+      await axios.post("https://blogify-backend-qi2k.onrender.com/api/posts", {
         title, content, author, category
       });
     }
@@ -82,7 +82,7 @@ function App() {
 
   const handleDelete = async (id) => {
     if (window.confirm("Delete this post?")) {
-      await axios.delete(`http://localhost:5000/api/posts/${id}`);
+      await axios.delete(`https://blogify-backend-qi2k.onrender.com/api/posts/${id}`);
       fetchPosts();
     }
   };
