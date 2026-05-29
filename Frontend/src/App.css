@@ -11,7 +11,7 @@ body {
 }
 
 .header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f5576c 0%, #764ba2 100%);
   color: white;
   padding: 20px 40px;
   display: flex;
@@ -40,7 +40,7 @@ body {
 }
 
 .create-post h2 {
-  color: #667eea;
+  color: #f5576c;
   margin-bottom: 20px;
   font-size: 22px;
 }
@@ -57,7 +57,7 @@ body {
 }
 
 .input-field:focus {
-  border-color: #667eea;
+  border-color: #f5576c;
 }
 
 .toolbar {
@@ -108,11 +108,11 @@ body {
 }
 
 .editor:focus {
-  border-color: #667eea;
+  border-color: #f5576c;
 }
 
 .publish-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f5576c 0%, #764ba2 100%);
   color: white;
   padding: 12px 30px;
   border: none;
@@ -141,7 +141,7 @@ body {
   margin-bottom: 20px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   transition: transform 0.2s, box-shadow 0.2s;
-  border-left: 5px solid #667eea;
+  border-left: 5px solid #f5576c;
 }
 
 .post-card:hover {
@@ -190,4 +190,76 @@ body {
   background: white;
   border-radius: 15px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.edit-btn {
+  background: #f5576c;
+  color: white;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.edit-btn:hover {
+  background: #5a6fd6;
+  transform: translateY(-1px);
+}
+
+.search-bar {
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 15px 20px;
+  border: 2px solid #e1e5e9;
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.search-input:focus {
+  border-color: #f5576c;
+}
+
+.category-filter {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.cat-btn {
+  padding: 8px 18px;
+  border: 2px solid #f5576c;
+  border-radius: 20px;
+  background: white;
+  color: #f5576c;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.cat-btn:hover {
+  background: #f5576c;
+  color: white;
+}
+
+.cat-btn.active {
+  background: #f5576c;
+  color: white;
+}
+
+.category-badge {
+  background: #f5576c;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
 }
