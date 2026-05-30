@@ -1,7 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./App.css";
+import { signInWithGoogle, logOut, auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const CATEGORIES = [
   "General",
   "Technology",
@@ -21,20 +25,42 @@ function App() {
   const [editingId, setEditingId] = useState(null);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const editorRef = useRef(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     fetchPosts();
   }, [search, activeCategory]);
 
   const fetchPosts = async () => {
-    const res = await axios.get(`${API}/api/posts`, {
-      params: {
-        search: search,
-        category: activeCategory
-      }
-    });
-    setPosts(res.data);
+    try {
+      const res = await axios.get(`${API}/api/posts`, {
+        params: { search, category: activeCategory }
+      });
+      setPosts(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    const loggedInUser = await signInWithGoogle();
+    if (loggedInUser) {
+      alert(`Welcome ${loggedInUser.displayName}! 🎉`);
+    }
+  };
+
+  const handleLogout = async () => {
+    await logOut();
   };
 
   const handleSubmit = async () => {
@@ -44,18 +70,23 @@ function App() {
     }
     if (editingId) {
       await axios.put(`${API}/api/posts/${editingId}`, {
-        title, content, author, category
+        title,
+        content,
+        author: user?.displayName || author,
+        category
       });
       setEditingId(null);
       alert("Post updated! ✅");
     } else {
       await axios.post(`${API}/api/posts`, {
-        title, content, author, category
+        title,
+        content,
+        author: user?.displayName || author,
+        category
       });
     }
     setTitle("");
     setContent("");
-    setAuthor("");
     setCategory("General");
     if (editorRef.current) editorRef.current.innerHTML = "";
     fetchPosts();
@@ -92,14 +123,61 @@ function App() {
     document.execCommand(command, false, value);
   };
 
+  if (loading) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" }}>
+        <h2 style={{ color: "white", fontSize: "24px" }}>Loading Blogify... ⏳</h2>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="login-page">
+        <div className="login-card">
+          <div className="login-logo">✍️</div>
+          <h1 className="login-title">Blogify</h1>
+          <p className="login-subtitle">Write. Publish. Inspire.</p>
+          <p className="login-desc">
+            Your personal blogging platform. Create beautiful posts and share your thoughts with the world!
+          </p>
+          <button onClick={handleGoogleLogin} className="google-btn">
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="Google"
+              style={{ width: "24px", marginRight: "10px" }}
+            />
+            Continue with Google
+          </button>
+          <p className="login-footer">
+            Free forever. No credit card required. 🎉
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Header */}
       <div className="header">
-        <h1>📝 Blogify</h1>
-        <span style={{ fontSize: "14px", opacity: 0.8 }}>
-          Write. Publish. Inspire. 🚀
-        </span>
+        <h1>✍️ Blogify</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+          <img
+            src={user.photoURL}
+            alt={user.displayName}
+            style={{ width: "35px", height: "35px", borderRadius: "50%", border: "2px solid white" }}
+          />
+          <span style={{ fontSize: "14px" }}>
+            {user.displayName}
+          </span>
+          <button
+            onClick={handleLogout}
+            style={{ background: "rgba(255,255,255,0.2)", color: "white", padding: "8px 15px", border: "1px solid white", borderRadius: "5px", cursor: "pointer" }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       <div className="container">
@@ -174,14 +252,6 @@ function App() {
             suppressContentEditableWarning={true}
           />
 
-          <input
-            type="text"
-            placeholder="Author name..."
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            className="input-field"
-          />
-
           <div style={{ display: "flex", gap: "10px" }}>
             <button onClick={handleSubmit} className="publish-btn">
               {editingId ? "✅ Update Post" : "🚀 Publish Post"}
@@ -220,8 +290,18 @@ function App() {
                   ✍️ {post.author} &nbsp;|&nbsp; 📅 {new Date(post.createdAt).toLocaleDateString()}
                 </div>
                 <div style={{ display: "flex", gap: "10px" }}>
-                  <button onClick={() => handleEdit(post)} className="edit-btn">✏️ Edit</button>
-                  <button onClick={() => handleDelete(post._id)} className="delete-btn">🗑️ Delete</button>
+                  <button
+                    onClick={() => handleEdit(post)}
+                    className="edit-btn"
+                  >
+                    ✏️ Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(post._id)}
+                    className="delete-btn"
+                  >
+                    🗑️ Delete
+                  </button>
                 </div>
               </div>
             ))
