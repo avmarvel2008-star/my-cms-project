@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./App.css";
-
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const CATEGORIES = [
   "General",
   "Technology",
@@ -28,7 +28,7 @@ function App() {
   }, [search, activeCategory]);
 
   const fetchPosts = async () => {
-    const res = await axios.get("https://blogify-backend-qi2k.onrender.com/api/posts", {
+    const res = await axios.get(`${API}/api/posts`, {
       params: {
         search: search,
         category: activeCategory
@@ -43,13 +43,13 @@ function App() {
       return;
     }
     if (editingId) {
-      await axios.put(`https://blogify-backend-qi2k.onrender.com/api/posts/${editingId}`, {
+      await axios.put(`${API}/api/posts/${editingId}`, {
         title, content, author, category
       });
       setEditingId(null);
       alert("Post updated! ✅");
     } else {
-      await axios.post("https://blogify-backend-qi2k.onrender.com/api/posts", {
+      await axios.post(`${API}/api/posts`, {
         title, content, author, category
       });
     }
@@ -82,7 +82,7 @@ function App() {
 
   const handleDelete = async (id) => {
     if (window.confirm("Delete this post?")) {
-      await axios.delete(`https://blogify-backend-qi2k.onrender.com/api/posts/${id}`);
+      await axios.delete(`${API}/api/posts/${id}`);
       fetchPosts();
     }
   };
