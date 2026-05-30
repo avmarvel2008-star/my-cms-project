@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./App.css";
-import { signInWithGoogle, logOut, auth } from "./firebase";
+import { signInWithGoogle, logOut, auth, getLoginResult } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -29,13 +29,21 @@ function App() {
   const [loading, setLoading] = useState(true);
   const editorRef = useRef(null);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+    setLoading(false);
+  });
+
+  // Handle redirect result
+  getLoginResult().then((user) => {
+    if (user) {
+      console.log("Logged in via redirect!", user);
+    }
+  });
+
+  return () => unsubscribe();
+}, []);
 
   useEffect(() => {
     fetchPosts();
