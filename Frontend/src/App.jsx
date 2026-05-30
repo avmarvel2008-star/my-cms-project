@@ -53,11 +53,16 @@ function App() {
   };
 
   const handleGoogleLogin = async () => {
+  try {
     const loggedInUser = await signInWithGoogle();
     if (loggedInUser) {
-      alert(`Welcome ${loggedInUser.displayName}! 🎉`);
+      console.log("Logged in!", loggedInUser);
     }
-  };
+  } catch (error) {
+    console.error(error);
+    alert("Login failed! Please try again.");
+  }
+};
 
   const handleLogout = async () => {
     await logOut();

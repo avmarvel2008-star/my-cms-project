@@ -1,5 +1,12 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  signOut 
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDS8fqi9ptlgy4aIIumrHACQzvw130uCLY",
@@ -14,12 +21,19 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
+
 export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
   } catch (error) {
-    console.error(error);
+    if (error.code === 'auth/popup-blocked') {
+      await signInWithRedirect(auth, googleProvider);
+    }
+    console.error(error.code, error.message);
     return null;
   }
 };
