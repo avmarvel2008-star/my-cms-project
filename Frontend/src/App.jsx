@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./App.css";
-import { signInWithGoogle, logOut, auth, getLoginResult } from "./firebase";
+import { signInWithGoogle, logOut, auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
-
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const CATEGORIES = [
@@ -34,22 +33,6 @@ useEffect(() => {
     setUser(currentUser);
     setLoading(false);
   });
-
-  // Handle redirect result after Google login
-  import("firebase/auth").then(({ getRedirectResult }) => {
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result?.user) {
-          setUser(result.user);
-          setLoading(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Redirect error:", error);
-        setLoading(false);
-      });
-  });
-
   return () => unsubscribe();
 }, []);
 
@@ -70,13 +53,13 @@ useEffect(() => {
 
   const handleGoogleLogin = async () => {
   try {
-    const loggedInUser = await signInWithGoogle();
-    if (loggedInUser) {
-      console.log("Logged in!", loggedInUser);
-    }
+    await signInWithGoogle();
   } catch (error) {
-    console.error(error);
-    alert("Login failed! Please try again.");
+    if (error.code === 'auth/popup-blocked') {
+      alert("Please allow popups for this site! Click the popup blocked icon in your address bar!");
+    } else {
+      alert("Login failed: " + error.message);
+    }
   }
 };
 

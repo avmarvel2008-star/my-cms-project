@@ -1,10 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  signInWithRedirect,
-  getRedirectResult,
-  signOut 
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -20,28 +19,17 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
-googleProvider.setCustomParameters({
-  prompt: 'select_account'
-});
+googleProvider.addScope('email');
+googleProvider.addScope('profile');
 
 export const signInWithGoogle = async () => {
   try {
-    await signInWithRedirect(auth, googleProvider);
+    auth.useDeviceLanguage();
+    const result = await signInWithPopup(auth, googleProvider);
+    return result.user;
   } catch (error) {
-    console.error(error);
-  }
-};
-
-export const getLoginResult = async () => {
-  try {
-    const result = await getRedirectResult(auth);
-    if (result) {
-      return result.user;
-    }
-    return null;
-  } catch (error) {
-    console.error(error);
-    return null;
+    console.error("Login error:", error.code, error.message);
+    throw error;
   }
 };
 
