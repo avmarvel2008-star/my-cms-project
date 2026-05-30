@@ -2,17 +2,32 @@ const express = require('express');
 const router = express.Router();
 const Post = require('../models/Post');
 
-// GET all posts
+// GET all posts with search and category filter
 router.get('/', async (req, res) => {
   try {
-    const posts = await Post.find();
+    const { search, category } = req.query;
+    let query = {};
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { content: { $regex: search, $options: 'i' } },
+        { author: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    if (category && category !== 'All') {
+      query.category = category;
+    }
+
+    const posts = await Post.find(query).sort({ createdAt: -1 });
     res.json(posts);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// CREATE a new post
+// CREATE a post
 router.post('/', async (req, res) => {
   try {
     const post = new Post(req.body);
@@ -22,17 +37,8 @@ router.post('/', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
-// DELETE a post
-router.delete('/:id', async (req, res) => {
-  try {
-    await Post.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Post deleted!' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
 
-// EDIT a post
+// UPDATE a post
 router.put('/:id', async (req, res) => {
   try {
     const post = await Post.findByIdAndUpdate(
@@ -45,4 +51,15 @@ router.put('/:id', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+// DELETE a post
+router.delete('/:id', async (req, res) => {
+  try {
+    await Post.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Post deleted!' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
