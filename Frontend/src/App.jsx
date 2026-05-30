@@ -35,11 +35,19 @@ useEffect(() => {
     setLoading(false);
   });
 
-  // Handle redirect result
-  getLoginResult().then((user) => {
-    if (user) {
-      console.log("Logged in via redirect!", user);
-    }
+  // Handle redirect result after Google login
+  import("firebase/auth").then(({ getRedirectResult }) => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          setUser(result.user);
+          setLoading(false);
+        }
+      })
+      .catch((error) => {
+        console.error("Redirect error:", error);
+        setLoading(false);
+      });
   });
 
   return () => unsubscribe();
