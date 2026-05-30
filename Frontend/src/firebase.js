@@ -8,7 +8,7 @@ import {
 } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDS8fqi9ptlgy4aIIumrHACQzvw130uCLY",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "blogify-cms.firebaseapp.com",
   projectId: "blogify-cms",
   storageBucket: "blogify-cms.firebasestorage.app",
