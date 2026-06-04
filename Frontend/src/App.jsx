@@ -3,17 +3,21 @@ import axios from "axios";
 import "./App.css";
 import { signInWithGoogle, logOut, auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
+
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const CATEGORIES = [
-  "General",
-  "Technology",
-  "Life",
-  "Travel",
-  "Food",
-  "Education",
-  "News"
+  "General", "Technology", "Life",
+  "Travel", "Food", "Education", "News"
 ];
+
+// Reading time calculator
+const calculateReadingTime = (content) => {
+  const text = content.replace(/<[^>]*>/g, '');
+  const words = text.split(/\s+/).length;
+  const minutes = Math.ceil(words / 200);
+  return minutes;
+};
 
 function App() {
   const [posts, setPosts] = useState([]);
@@ -26,15 +30,19 @@ function App() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [commentText, setCommentText] = useState({});
+  const [showComments, setShowComments] = useState({});
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
   const editorRef = useRef(null);
 
-useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser);
-    setLoading(false);
-  });
-  return () => unsubscribe();
-}, []);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     fetchPosts();
@@ -52,16 +60,12 @@ useEffect(() => {
   };
 
   const handleGoogleLogin = async () => {
-  try {
-    await signInWithGoogle();
-  } catch (error) {
-    if (error.code === 'auth/popup-blocked') {
-      alert("Please allow popups for this site! Click the popup blocked icon in your address bar!");
-    } else {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
       alert("Login failed: " + error.message);
     }
-  }
-};
+  };
 
   const handleLogout = async () => {
     await logOut();
@@ -74,19 +78,12 @@ useEffect(() => {
     }
     if (editingId) {
       await axios.put(`${API}/api/posts/${editingId}`, {
-        title,
-        content,
-        author: user?.displayName || author,
-        category
+        title, content, author: user?.displayName || author, category
       });
       setEditingId(null);
-      alert("Post updated! ✅");
     } else {
       await axios.post(`${API}/api/posts`, {
-        title,
-        content,
-        author: user?.displayName || author,
-        category
+        title, content, author: user?.displayName || author, category
       });
     }
     setTitle("");
@@ -122,6 +119,79 @@ useEffect(() => {
     }
   };
 
+  const handleLike = async (id) => {
+    await axios.put(`${API}/api/posts/${id}/like`);
+    fetchPosts();
+  };
+
+  const handleAddComment = async (postId) => {
+    if (!commentText[postId]) return;
+    await axios.post(`${API}/api/posts/${postId}/comments`, {
+      author: user?.displayName || "Anonymous",
+      content: commentText[postId]
+    });
+    setCommentText({ ...commentText, [postId]: "" });
+    fetchPosts();
+  };
+
+  const handleDeleteComment = async (postId, commentId) => {
+    await axios.delete(`${API}/api/posts/${postId}/comments/${commentId}`);
+    fetchPosts();
+  };
+
+  const handleShare = (platform, post) => {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent(post.title);
+    const links = {
+      whatsapp: `https://wa.me/?text=${text}%20${url}`,
+      twitter: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+      copy: null
+    };
+    if (platform === 'copy') {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied! ✅');
+      return;
+    }
+    window.open(links[platform], '_blank');
+  };
+
+  const handleAIGenerate = async () => {
+    if (!aiPrompt) {
+      alert("Please enter a topic!");
+      return;
+    }
+    setAiLoading(true);
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{
+            role: "user",
+            content: `Write a blog post about: ${aiPrompt}. 
+            Format with HTML tags like <h2>, <p>, <ul>, <li>.
+            Make it engaging, informative and around 300 words.`
+          }]
+        })
+      });
+      const data = await response.json();
+      const generatedContent = data.content[0].text;
+      setContent(generatedContent);
+      setTitle(`Blog about: ${aiPrompt}`);
+      if (editorRef.current) {
+        editorRef.current.innerHTML = generatedContent;
+      }
+      setAiPrompt("");
+      alert("AI content generated! ✅ Edit it and publish!");
+    } catch (err) {
+      alert("AI generation failed. Try again!");
+    }
+    setAiLoading(false);
+  };
+
   const formatText = (command, value = null) => {
     editorRef.current.focus();
     document.execCommand(command, false, value);
@@ -130,7 +200,7 @@ useEffect(() => {
   if (loading) {
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" }}>
-        <h2 style={{ color: "white", fontSize: "24px" }}>Loading Blogify... ⏳</h2>
+        <h2 style={{ color: "white" }}>Loading Blogify... ⏳</h2>
       </div>
     );
   }
@@ -142,9 +212,7 @@ useEffect(() => {
           <div className="login-logo">✍️</div>
           <h1 className="login-title">Blogify</h1>
           <p className="login-subtitle">Write. Publish. Inspire.</p>
-          <p className="login-desc">
-            Your personal blogging platform. Create beautiful posts and share your thoughts with the world!
-          </p>
+          <p className="login-desc">Your personal blogging platform!</p>
           <button onClick={handleGoogleLogin} className="google-btn">
             <img
               src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
@@ -153,9 +221,7 @@ useEffect(() => {
             />
             Continue with Google
           </button>
-          <p className="login-footer">
-            Free forever. No credit card required. 🎉
-          </p>
+          <p className="login-footer">Free forever. No credit card required. 🎉</p>
         </div>
       </div>
     );
@@ -172,54 +238,64 @@ useEffect(() => {
             alt={user.displayName}
             style={{ width: "35px", height: "35px", borderRadius: "50%", border: "2px solid white" }}
           />
-          <span style={{ fontSize: "14px" }}>
-            {user.displayName}
-          </span>
-          <button
-            onClick={handleLogout}
-            style={{ background: "rgba(255,255,255,0.2)", color: "white", padding: "8px 15px", border: "1px solid white", borderRadius: "5px", cursor: "pointer" }}
-          >
-            Logout
-          </button>
+          <span style={{ fontSize: "14px" }}>{user.displayName}</span>
+          <button onClick={handleLogout} className="logout-btn">Logout</button>
         </div>
       </div>
 
       <div className="container">
 
-        {/* Search Bar */}
+        {/* Search */}
         <div className="search-bar">
           <input
             type="text"
-            placeholder="🔍 Search posts by title, content or author..."
+            placeholder="🔍 Search posts..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="search-input"
           />
         </div>
 
-        {/* Category Filter */}
+        {/* Categories */}
         <div className="category-filter">
           <button
             onClick={() => setActiveCategory("All")}
             className={`cat-btn ${activeCategory === "All" ? "active" : ""}`}
-          >
-            All
-          </button>
+          >All</button>
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
               className={`cat-btn ${activeCategory === cat ? "active" : ""}`}
-            >
-              {cat}
-            </button>
+            >{cat}</button>
           ))}
+        </div>
+
+        {/* AI Generator */}
+        <div className="ai-section">
+          <h3>🤖 AI Blog Generator</h3>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <input
+              type="text"
+              placeholder="Enter a topic e.g. 'Benefits of meditation'"
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              className="input-field"
+              style={{ flex: 1 }}
+            />
+            <button
+              onClick={handleAIGenerate}
+              className="ai-btn"
+              disabled={aiLoading}
+            >
+              {aiLoading ? "Generating... ⏳" : "Generate ✨"}
+            </button>
+          </div>
         </div>
 
         {/* Create/Edit Post */}
         <div className="create-post">
           <h2>{editingId ? "✏️ Edit Post" : "✍️ Create New Post"}</h2>
-
           <input
             type="text"
             placeholder="Enter post title..."
@@ -227,7 +303,6 @@ useEffect(() => {
             onChange={(e) => setTitle(e.target.value)}
             className="input-field"
           />
-
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -237,7 +312,6 @@ useEffect(() => {
               <option key={cat} value={cat}>{cat}</option>
             ))}
           </select>
-
           <div className="toolbar">
             <button onMouseDown={(e) => { e.preventDefault(); formatText("bold"); }}><b>B</b></button>
             <button onMouseDown={(e) => { e.preventDefault(); formatText("italic"); }}><i>I</i></button>
@@ -247,7 +321,6 @@ useEffect(() => {
             <button onMouseDown={(e) => { e.preventDefault(); formatText("formatBlock", "h2"); }}>H2</button>
             <button onMouseDown={(e) => { e.preventDefault(); formatText("formatBlock", "p"); }}>P</button>
           </div>
-
           <div
             ref={editorRef}
             contentEditable
@@ -255,16 +328,12 @@ useEffect(() => {
             className="editor"
             suppressContentEditableWarning={true}
           />
-
           <div style={{ display: "flex", gap: "10px" }}>
             <button onClick={handleSubmit} className="publish-btn">
               {editingId ? "✅ Update Post" : "🚀 Publish Post"}
             </button>
             {editingId && (
-              <button
-                onClick={handleCancelEdit}
-                style={{ background: "gray", color: "white", padding: "12px 30px", border: "none", borderRadius: "8px", fontSize: "16px", cursor: "pointer", flex: 1 }}
-              >
+              <button onClick={handleCancelEdit} className="cancel-btn">
                 ❌ Cancel
               </button>
             )}
@@ -282,31 +351,88 @@ useEffect(() => {
           ) : (
             posts.map((post) => (
               <div key={post._id} className="post-card">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+
+                {/* Post Header */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                   <h3>{post.title}</h3>
                   <span className="category-badge">{post.category}</span>
                 </div>
-                <div
-                  className="post-content"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
+
+                {/* Reading Time */}
+                <div className="reading-time">
+                  📖 {calculateReadingTime(post.content)} min read
+                </div>
+
+                {/* Content */}
+                <div className="post-content" dangerouslySetInnerHTML={{ __html: post.content }} />
+
+                {/* Meta */}
                 <div className="post-meta">
                   ✍️ {post.author} &nbsp;|&nbsp; 📅 {new Date(post.createdAt).toLocaleDateString()}
                 </div>
-                <div style={{ display: "flex", gap: "10px" }}>
+
+                {/* Action Buttons */}
+                <div className="post-actions">
+
+                  {/* Like Button */}
                   <button
-                    onClick={() => handleEdit(post)}
-                    className="edit-btn"
+                    onClick={() => handleLike(post._id)}
+                    className="like-btn"
                   >
-                    ✏️ Edit
+                    ❤️ {post.likes || 0}
                   </button>
+
+                  {/* Comments Toggle */}
                   <button
-                    onClick={() => handleDelete(post._id)}
-                    className="delete-btn"
+                    onClick={() => setShowComments({ ...showComments, [post._id]: !showComments[post._id] })}
+                    className="comment-toggle-btn"
                   >
-                    🗑️ Delete
+                    💬 {post.comments?.length || 0}
                   </button>
+
+                  {/* Share Buttons */}
+                  <button onClick={() => handleShare('whatsapp', post)} className="share-btn whatsapp">📱 WhatsApp</button>
+                  <button onClick={() => handleShare('twitter', post)} className="share-btn twitter">🐦 Twitter</button>
+                  <button onClick={() => handleShare('linkedin', post)} className="share-btn linkedin">💼 LinkedIn</button>
+                  <button onClick={() => handleShare('copy', post)} className="share-btn copy">🔗 Copy</button>
+
+                  {/* Edit/Delete */}
+                  <button onClick={() => handleEdit(post)} className="edit-btn">✏️</button>
+                  <button onClick={() => handleDelete(post._id)} className="delete-btn">🗑️</button>
                 </div>
+
+                {/* Comments Section */}
+                {showComments[post._id] && (
+                  <div className="comments-section">
+                    <h4>💬 Comments</h4>
+
+                    {post.comments?.map((comment) => (
+                      <div key={comment._id} className="comment">
+                        <strong>{comment.author}</strong>
+                        <p>{comment.content}</p>
+                        <small>{new Date(comment.createdAt).toLocaleDateString()}</small>
+                        <button
+                          onClick={() => handleDeleteComment(post._id, comment._id)}
+                          className="delete-comment-btn"
+                        >🗑️</button>
+                      </div>
+                    ))}
+
+                    <div className="add-comment">
+                      <input
+                        type="text"
+                        placeholder="Write a comment..."
+                        value={commentText[post._id] || ""}
+                        onChange={(e) => setCommentText({ ...commentText, [post._id]: e.target.value })}
+                        className="comment-input"
+                      />
+                      <button
+                        onClick={() => handleAddComment(post._id)}
+                        className="add-comment-btn"
+                      >Post 📤</button>
+                    </div>
+                  </div>
+                )}
               </div>
             ))
           )}
