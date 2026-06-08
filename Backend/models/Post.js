@@ -1,5 +1,14 @@
 const mongoose = require('mongoose');
 
+const CommentSchema = new mongoose.Schema({
+  author: String,
+  content: String,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
 const PostSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -17,10 +26,15 @@ const PostSchema = new mongoose.Schema({
     type: String,
     default: 'General'
   },
-  tags: {
-    type: [String],
-    default: []
+  likes: {
+    type: Number,
+    default: 0
   },
+  views: {
+    type: Number,
+    default: 0
+  },
+  comments: [CommentSchema],
   status: {
     type: String,
     default: 'published'

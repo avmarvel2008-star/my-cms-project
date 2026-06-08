@@ -156,41 +156,29 @@ function App() {
     window.open(links[platform], '_blank');
   };
 
-  const handleAIGenerate = async () => {
-    if (!aiPrompt) {
-      alert("Please enter a topic!");
-      return;
+const handleAIGenerate = async () => {
+  if (!aiPrompt) {
+    alert("Please enter a topic!");
+    return;
+  }
+  setAiLoading(true);
+  try {
+    const response = await axios.post(`${API}/api/ai/generate`, {
+      prompt: aiPrompt
+    });
+    const generatedContent = response.data.content;
+    setContent(generatedContent);
+    setTitle(`Blog about: ${aiPrompt}`);
+    if (editorRef.current) {
+      editorRef.current.innerHTML = generatedContent;
     }
-    setAiLoading(true);
-    try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [{
-            role: "user",
-            content: `Write a blog post about: ${aiPrompt}. 
-            Format with HTML tags like <h2>, <p>, <ul>, <li>.
-            Make it engaging, informative and around 300 words.`
-          }]
-        })
-      });
-      const data = await response.json();
-      const generatedContent = data.content[0].text;
-      setContent(generatedContent);
-      setTitle(`Blog about: ${aiPrompt}`);
-      if (editorRef.current) {
-        editorRef.current.innerHTML = generatedContent;
-      }
-      setAiPrompt("");
-      alert("AI content generated! ✅ Edit it and publish!");
-    } catch (err) {
-      alert("AI generation failed. Try again!");
-    }
-    setAiLoading(false);
-  };
+    setAiPrompt("");
+    alert("AI content generated! ✅ Edit it and publish!");
+  } catch (err) {
+    alert("AI generation failed: " + err.message);
+  }
+  setAiLoading(false);
+};
 
   const formatText = (command, value = null) => {
     editorRef.current.focus();
