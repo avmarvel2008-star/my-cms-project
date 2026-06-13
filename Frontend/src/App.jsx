@@ -36,13 +36,8 @@ function App() {
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const editorRef = useRef(null);
-  const [activeCategory, setActiveCategory] = useState("All");
- const [user, setUser] = useState(null);
- const [loading, setLoading] = useState(true);
  const [showBuilder, setShowBuilder] = useState(false); 
- const editorRef = useRef(null);
-
-  useEffect(() => {
+useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
