@@ -108,9 +108,10 @@ function CanvasBlock({ block, index, moveBlock, updateContent, removeBlock }) {
       )}
 
       {block.type === "video" && (
-        <input
-          type="text"
-          placeholder="Paste YouTube embed URL..."
+        
+          <input
+  type="text"
+  placeholder="Paste YouTube EMBED URL (youtube.com/embed/VIDEO_ID)..."
           value={block.content}
           onChange={(e) => updateContent(index, e.target.value)}
           className="block-input"
@@ -179,14 +180,20 @@ export default function PageBuilder({ onSave, onClose }) {
       return updated;
     });
   };
-
-  const updateContent = (index, value) => {
-    setBlocks((prev) => {
-      const updated = [...prev];
-      updated[index].content = value;
-      return updated;
-    });
-  };
+const updateContent = (index, value) => {
+  setBlocks((prev) => {
+    const updated = [...prev];
+    if (updated[index].type === "video") {
+      // Auto-convert regular YouTube URLs to embed URLs
+      const watchMatch = value.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+      if (watchMatch) {
+        value = `https://www.youtube.com/embed/${watchMatch[1]}`;
+      }
+    }
+    updated[index].content = value;
+    return updated;
+  });
+};
 
   const removeBlock = (index) => {
     setBlocks((prev) => prev.filter((_, i) => i !== index));
