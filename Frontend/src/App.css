@@ -462,3 +462,187 @@ body {
 .add-comment-btn:hover {
   background: #e04460;
 }
+.builder-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.builder-modal {
+  background: white;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 900px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+.builder-header {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.builder-close-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+}
+.builder-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+.builder-sidebar {
+  width: 180px;
+  background: #f8f9fa;
+  padding: 15px;
+  border-right: 1px solid #eee;
+  overflow-y: auto;
+}
+.builder-sidebar h3 {
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+.builder-hint {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 15px;
+}
+.sidebar-block {
+  background: white;
+  border: 2px dashed #f5576c;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+  text-align: center;
+  cursor: grab;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.sidebar-block:hover {
+  background: #fff0f3;
+  transform: scale(1.03);
+}
+.canvas {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #fafafa;
+}
+.canvas-hover {
+  background: #fff0f3;
+}
+.canvas-empty {
+  text-align: center;
+  color: #999;
+  padding: 60px 20px;
+  border: 2px dashed #ddd;
+  border-radius: 10px;
+}
+.canvas-block {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 12px;
+  cursor: move;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.canvas-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.canvas-block-label {
+  font-size: 12px;
+  font-weight: bold;
+  color: #f5576c;
+}
+.remove-block-btn {
+  background: #ff4757;
+  color: white;
+  border: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 12px;
+}
+.block-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+}
+.header-input {
+  font-size: 18px;
+  font-weight: bold;
+}
+.block-image-preview {
+  max-width: 100%;
+  margin-top: 8px;
+  border-radius: 6px;
+}
+.block-video-preview {
+  width: 100%;
+  height: 200px;
+  margin-top: 8px;
+  border-radius: 6px;
+  border: none;
+}
+.builder-footer {
+  padding: 15px 20px;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid #eee;
+}
+.builder-save-btn {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  flex: 1;
+}
+.builder-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.builder-cancel-btn {
+  background: #eee;
+  color: #333;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.open-builder-btn {
+  background: #667eea;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 15px;
+  white-space: nowrap;
+}

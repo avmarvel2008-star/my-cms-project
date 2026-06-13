@@ -3,6 +3,7 @@ import axios from "axios";
 import "./App.css";
 import { signInWithGoogle, logOut, auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import PageBuilder from "./PageBuilder";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -35,6 +36,11 @@ function App() {
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const editorRef = useRef(null);
+  const [activeCategory, setActiveCategory] = useState("All");
+ const [user, setUser] = useState(null);
+ const [loading, setLoading] = useState(true);
+ const [showBuilder, setShowBuilder] = useState(false); 
+ const editorRef = useRef(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -300,6 +306,13 @@ const handleAIGenerate = async () => {
               <option key={cat} value={cat}>{cat}</option>
             ))}
           </select>
+          <button
+  onClick={() => setShowBuilder(true)}
+  className="open-builder-btn"
+  type="button"
+>
+  🖱️ Open Page Builder
+</button>
           <div className="toolbar">
             <button onMouseDown={(e) => { e.preventDefault(); formatText("bold"); }}><b>B</b></button>
             <button onMouseDown={(e) => { e.preventDefault(); formatText("italic"); }}><i>I</i></button>
@@ -426,8 +439,19 @@ const handleAIGenerate = async () => {
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
+    {showBuilder && (
+  <PageBuilder
+    onSave={(html) => {
+      setContent((prev) => prev + html);
+      if (editorRef.current) {
+        editorRef.current.innerHTML = (editorRef.current.innerHTML || "") + html;
+      }
+      setShowBuilder(false);
+    }}
+    onClose={() => setShowBuilder(false)}
+  />
+)}
+</div>
+)
+	}
 export default App;
