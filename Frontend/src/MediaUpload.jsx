@@ -13,7 +13,6 @@ export default function MediaUpload({ onInsert, onClose }) {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Detect type
     const type = file.type.startsWith("video") ? "video" : "image";
     setMediaType(type);
     setUploading(true);
@@ -92,7 +91,7 @@ export default function MediaUpload({ onInsert, onClose }) {
                 <p>Uploading... please wait ⏳</p>
               </div>
             ) : preview ? (
-              <div className="upload-preview">
+              <div className="upload-preview" style={{ position: "relative" }}>
                 {preview.type === "image" ? (
                   <img src={preview.url} alt="preview" className="preview-img" />
                 ) : (
@@ -100,6 +99,16 @@ export default function MediaUpload({ onInsert, onClose }) {
                     <source src={preview.url} type="video/mp4" />
                   </video>
                 )}
+                <button
+                  className="remove-preview-btn"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setPreview(null);
+                  }}
+                >
+                  ✕
+                </button>
                 <p className="reupload-hint">Click to upload a different file</p>
               </div>
             ) : (
