@@ -455,6 +455,17 @@ const handleAIGenerate = async () => {
     onClose={() => setShowBuilder(false)}
   />
 )}
+{showMediaUpload && (
+  <MediaUpload
+    onInsert={(html) => {
+      setContent((prev) => prev + html);
+      if (editorRef.current) {
+        editorRef.current.innerHTML += html;
+      }
+    }}
+    onClose={() => setShowMediaUpload(false)}
+  />
+)}
 </div>
 )
 	}
