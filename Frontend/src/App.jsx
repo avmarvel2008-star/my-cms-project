@@ -4,6 +4,7 @@ import "./App.css";
 import { signInWithGoogle, logOut, auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import PageBuilder from "./PageBuilder";
+import MediaUpload from "./MediaUpload";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -37,6 +38,7 @@ function App() {
   const [aiLoading, setAiLoading] = useState(false);
   const editorRef = useRef(null);
  const [showBuilder, setShowBuilder] = useState(false); 
+ const [showMediaUpload, setShowMediaUpload] = useState(false);
 useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -307,6 +309,13 @@ const handleAIGenerate = async () => {
   type="button"
 >
   🖱️ Open Page Builder
+</button>
+<button
+  onClick={() => setShowMediaUpload(true)}
+  className="upload-media-btn"
+  type="button"
+>
+  📁 Upload Image/Video
 </button>
           <div className="toolbar">
             <button onMouseDown={(e) => { e.preventDefault(); formatText("bold"); }}><b>B</b></button>
