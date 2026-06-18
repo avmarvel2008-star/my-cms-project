@@ -310,14 +310,7 @@ const handleAIGenerate = async () => {
 >
   🖱️ Open Page Builder
 </button>
-<button
-  onClick={() => setShowMediaUpload(true)}
-  className="upload-media-btn"
-  type="button"
->
-  📁 Upload Image/Video
-</button>
-          <div className="toolbar">
+         <div className="toolbar">
             <button onMouseDown={(e) => { e.preventDefault(); formatText("bold"); }}><b>B</b></button>
             <button onMouseDown={(e) => { e.preventDefault(); formatText("italic"); }}><i>I</i></button>
             <button onMouseDown={(e) => { e.preventDefault(); formatText("underline"); }}><u>U</u></button>
@@ -325,7 +318,15 @@ const handleAIGenerate = async () => {
             <button onMouseDown={(e) => { e.preventDefault(); formatText("insertOrderedList"); }}>1. List</button>
             <button onMouseDown={(e) => { e.preventDefault(); formatText("formatBlock", "h2"); }}>H2</button>
             <button onMouseDown={(e) => { e.preventDefault(); formatText("formatBlock", "p"); }}>P</button>
+            <button onMouseDown={(e) => { e.preventDefault(); formatText("createLink", prompt("Enter URL:")); }}>🔗 Link</button>
           </div>
+          <button
+  onClick={() => setShowMediaUpload(true)}
+  className="upload-media-btn"
+  type="button"
+>
+  📁 Upload Image/Video
+</button>
           <div
             ref={editorRef}
             contentEditable
