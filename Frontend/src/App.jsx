@@ -6,6 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import PageBuilder from "./PageBuilder";
 import MediaUpload from "./MediaUpload";
 import ProfilePage from "./ProfilePage";
+const [darkMode, setDarkMode] = useState(false);
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -80,6 +81,15 @@ useEffect(() => {
   const handleLogout = async () => {
     await logOut();
   };
+  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+  <button className="darkmode-toggle" onClick={() => setDarkMode(!darkMode)}>
+    {darkMode ? "☀️" : "🌙"}
+  </button>
+  <button className="profile-btn" onClick={() => setShowProfile(true)}>
+    👤 {user.displayName}
+  </button>
+  <button onClick={handleSignOut}>Sign Out</button>
+</div>
 
   const handleSubmit = async () => {
     if (!title || !content) {
@@ -226,7 +236,8 @@ const handleAIGenerate = async () => {
   }
 
   return (
-    <div>
+
+    <div className={`app-container ${darkMode ? "dark" : ""}`}>
       {/* Header */}
       <div className="header">
         <h1>✍️ Blogify</h1>

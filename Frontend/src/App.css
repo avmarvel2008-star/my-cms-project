@@ -894,3 +894,77 @@ body {
   cursor: pointer;
   font-size: 14px;
 }
+/* Dark Mode */
+.dark {
+  background: #1a1a2e;
+  color: #e0e0e0;
+}
+.dark .navbar {
+  background: #16213e;
+  border-bottom: 1px solid #0f3460;
+}
+.dark .post-card {
+  background: #16213e;
+  border-color: #0f3460;
+  color: #e0e0e0;
+}
+.dark .input-field {
+  background: #16213e;
+  color: #e0e0e0;
+  border-color: #0f3460;
+}
+.dark select {
+  background: #16213e;
+  color: #e0e0e0;
+  border-color: #0f3460;
+}
+.dark .toolbar {
+  background: #16213e;
+  border-color: #0f3460;
+}
+.dark .toolbar button {
+  background: #0f3460;
+  color: #e0e0e0;
+}
+.dark [contenteditable] {
+  background: #16213e;
+  color: #e0e0e0;
+  border-color: #0f3460;
+}
+.dark .create-post-section {
+  background: #16213e;
+}
+.dark h1, .dark h2, .dark h3, .dark h4 {
+  color: #e0e0e0;
+}
+.dark .comment-box {
+  background: #0f3460;
+  color: #e0e0e0;
+}
+.dark .search-input {
+  background: #16213e;
+  color: #e0e0e0;
+  border-color: #0f3460;
+}
+.dark .category-btn {
+  background: #16213e;
+  color: #e0e0e0;
+  border-color: #0f3460;
+}
+.darkmode-toggle {
+  background: transparent;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+.darkmode-toggle:hover {
+  background: rgba(255,255,255,0.1);
+  transform: rotate(20deg);
+}
