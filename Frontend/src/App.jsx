@@ -7,6 +7,7 @@ import PageBuilder from "./PageBuilder";
 import MediaUpload from "./MediaUpload";
 import ProfilePage from "./ProfilePage";
 import Dashboard from "./Dashboard";
+import Notifications from "./Notifications";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -43,6 +44,7 @@ function App() {
  const [showMediaUpload, setShowMediaUpload] = useState(false);
  const [showProfile, setShowProfile] = useState(false);
  const [darkMode, setDarkMode] = useState(false);
+ const [showNotifications, setShowNotifications] = useState(false);
 useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -512,5 +514,11 @@ export default App;
   <Dashboard
     user={user}
     onClose={() => setShowDashboard(false)}
+  />
+)}
+{showNotifications && (
+  <Notifications
+    user={user}
+    onClose={() => setShowNotifications(false)}
   />
 )}
