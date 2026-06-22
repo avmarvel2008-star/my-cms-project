@@ -6,7 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import PageBuilder from "./PageBuilder";
 import MediaUpload from "./MediaUpload";
 import ProfilePage from "./ProfilePage";
-const [darkMode, setDarkMode] = useState(false);
+import Dashboard from "./Dashboard";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -42,6 +42,7 @@ function App() {
  const [showBuilder, setShowBuilder] = useState(false); 
  const [showMediaUpload, setShowMediaUpload] = useState(false);
  const [showProfile, setShowProfile] = useState(false);
+ const [darkMode, setDarkMode] = useState(false);
 useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -248,6 +249,17 @@ const handleAIGenerate = async () => {
             style={{ width: "35px", height: "35px", borderRadius: "50%", border: "2px solid white" }}
           />
           <span style={{ fontSize: "14px" }}>{user.displayName}</span>
+          <button className="notif-btn" onClick={() => setShowNotifications(true)}>
+  🔔
+  <span className="notif-badge">!</span>
+</button>
+<button className="dashboard-btn" onClick={() => setShowDashboard(true)}>
+  📊 Dashboard
+</button>
+<button className="profile-btn" onClick={() => setShowProfile(true)}>
+  👤 {user.displayName}
+</button>
+<button onClick={handleLogout} className="logout-btn">Logout</button>
           <button onClick={handleLogout} className="logout-btn">Logout</button>
         </div>
       </div>
@@ -493,5 +505,12 @@ export default App;
   <ProfilePage
     user={user}
     onClose={() => setShowProfile(false)}
+  />
+)
+ }
+{showDashboard && (
+  <Dashboard
+    user={user}
+    onClose={() => setShowDashboard(false)}
   />
 )}
