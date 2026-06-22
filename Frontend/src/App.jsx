@@ -45,6 +45,7 @@ function App() {
  const [showProfile, setShowProfile] = useState(false);
  const [darkMode, setDarkMode] = useState(false);
  const [showNotifications, setShowNotifications] = useState(false);
+ const [showPreview, setShowPreview] = useState(false);
 useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -351,6 +352,12 @@ const handleAIGenerate = async () => {
             <button onMouseDown={(e) => { e.preventDefault(); formatText("formatBlock", "h2"); }}>H2</button>
             <button onMouseDown={(e) => { e.preventDefault(); formatText("formatBlock", "p"); }}>P</button>
             <button onMouseDown={(e) => { e.preventDefault(); formatText("createLink", prompt("Enter URL:")); }}>🔗 Link</button>
+          <button
+  onMouseDown={(e) => { e.preventDefault(); setShowPreview(!showPreview); }}
+  className={`toolbar-btn preview-toggle-btn ${showPreview ? "active" : ""}`}
+>
+  {showPreview ? "✏️ Edit" : "👁️ Preview"}
+</button>
           </div>
           <button
   onClick={() => setShowMediaUpload(true)}
@@ -522,3 +529,19 @@ export default App;
     onClose={() => setShowNotifications(false)}
   />
 )}
+<div className={`editor-wrapper ${showPreview ? "split-view" : ""}`}>
+  <div
+    ref={editorRef}
+    contentEditable
+    suppressContentEditableWarning
+    onInput={(e) => setContent(e.currentTarget.innerHTML)}
+    className="editor"
+    style={{ display: showPreview ? "none" : "block" }}
+  />
+  {showPreview && (
+    <div
+      className="preview-pane"
+      dangerouslySetInnerHTML={{ __html: content }}
+    />
+  )}
+</div>

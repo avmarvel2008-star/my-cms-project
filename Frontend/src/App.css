@@ -1201,3 +1201,58 @@ body {
   align-items: center;
   justify-content: center;
 }
+.editor-wrapper {
+  border: 2px solid #f5576c;
+  border-radius: 8px;
+  min-height: 200px;
+  overflow: hidden;
+}
+.editor-wrapper.split-view {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+.editor {
+  padding: 15px;
+  min-height: 200px;
+  outline: none;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.preview-pane {
+  padding: 15px;
+  min-height: 200px;
+  font-size: 15px;
+  line-height: 1.6;
+  border-left: 3px solid #f5576c;
+  background: #fff9f9;
+}
+.preview-pane h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+.preview-pane p {
+  margin-bottom: 10px;
+  color: #444;
+}
+.preview-pane ul, .preview-pane ol {
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+.preview-pane img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+.preview-toggle-btn {
+  margin-left: auto;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.preview-toggle-btn.active {
+  background: #f5576c;
+  color: white;
+  border-color: #f5576c;
+}
