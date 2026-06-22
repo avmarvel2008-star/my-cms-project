@@ -5,6 +5,7 @@ import { signInWithGoogle, logOut, auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import PageBuilder from "./PageBuilder";
 import MediaUpload from "./MediaUpload";
+import ProfilePage from "./ProfilePage";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -39,6 +40,7 @@ function App() {
   const editorRef = useRef(null);
  const [showBuilder, setShowBuilder] = useState(false); 
  const [showMediaUpload, setShowMediaUpload] = useState(false);
+ const [showProfile, setShowProfile] = useState(false);
 useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -69,7 +71,12 @@ useEffect(() => {
       alert("Login failed: " + error.message);
     }
   };
-
+  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+  <button className="profile-btn" onClick={() => setShowProfile(true)}>
+    👤 {user.displayName}
+  </button>
+  <button onClick={handleSignOut}>Sign Out</button>
+</div>
   const handleLogout = async () => {
     await logOut();
   };
@@ -471,3 +478,9 @@ const handleAIGenerate = async () => {
 )
 	}
 export default App;
+{showProfile && (
+  <ProfilePage
+    user={user}
+    onClose={() => setShowProfile(false)}
+  />
+)}
