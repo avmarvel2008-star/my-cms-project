@@ -258,18 +258,14 @@ function App() {
       <div className="header">
         <h1>✍️ Blogify</h1>
         <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-          <img
-            src={user.photoURL}
-            alt={user.displayName}
-            style={{ width: "35px", height: "35px", borderRadius: "50%", border: "2px solid white" }}
-          />
-          <span style={{ fontSize: "14px" }}>{user.displayName}</span>
+          
+          
           <button className="darkmode-toggle" onClick={() => setDarkMode(!darkMode)}>
             {darkMode ? "☀️" : "🌙"}
           </button>
           <button className="notif-btn" onClick={() => setShowNotifications(true)}>
             🔔
-            <span className="notif-badge">!</span>
+            {showNotifications && <span className="notif-dot"></span>}
           </button>
           <button className="dashboard-btn" onClick={() => setShowDashboard(true)}>
             📊 Dashboard
