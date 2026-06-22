@@ -205,27 +205,53 @@ function App() {
   }
 
   if (!user) {
-    return (
-      <div className="login-page">
+  return (
+    <div className="login-page">
+      <div className="login-content">
+        <div className="login-logo-wrap">
+          <div className="login-icon">✍️</div>
+        </div>
+        <h1 className="login-title">Blogify</h1>
+        <p className="login-subtitle">Write. Publish. Inspire.</p>
+
+        <div className="login-features">
+          <div className="login-feature-card">
+            <span className="feature-icon">📝</span>
+            <span>Rich Editor</span>
+          </div>
+          <div className="login-feature-card">
+            <span className="feature-icon">📊</span>
+            <span>Dashboard</span>
+          </div>
+          <div className="login-feature-card">
+            <span className="feature-icon">🖼️</span>
+            <span>Media Upload</span>
+          </div>
+        </div>
+
         <div className="login-card">
-          <div className="login-logo">✍️</div>
-          <h1 className="login-title">Blogify</h1>
-          <p className="login-subtitle">Write. Publish. Inspire.</p>
-          <p className="login-desc">Your personal blogging platform!</p>
           <button onClick={handleGoogleLogin} className="google-btn">
             <img
               src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
               alt="Google"
-              style={{ width: "24px", marginRight: "10px" }}
+              style={{ width: "22px", marginRight: "12px" }}
             />
             Continue with Google
           </button>
-          <p className="login-footer">Free forever. No credit card required. 🎉</p>
+          <p className="login-free">Free forever · No credit card required</p>
+        </div>
+
+        <div className="login-stats">
+          <div className="login-stat"><strong>10+</strong><span>Features</span></div>
+          <div className="login-stat-divider"></div>
+          <div className="login-stat"><strong>Free</strong><span>Forever</span></div>
+          <div className="login-stat-divider"></div>
+          <div className="login-stat"><strong>Cloud</strong><span>Powered</span></div>
         </div>
       </div>
-    );
-  }
-
+    </div>
+  );
+}
   return (
     <div className={`app-container ${darkMode ? "dark" : ""}`}>
       {/* Header */}
